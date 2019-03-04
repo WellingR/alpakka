@@ -102,8 +102,14 @@ public class JmsConnectorsTest {
     for (Integer n : intsIn) {
 
       // #create-messages-with-properties
+      HashMap<String, Object> propertyMap = new HashMap<>();
+      propertyMap.put("Message", "Example");
+      propertyMap.put("AnotherProperty", "Example");
       JmsTextMessage message =
           akka.stream.alpakka.jms.JmsTextMessage.create(n.toString())
+              // Replace all properties at once
+              .withPropertiesFromJava(propertyMap)
+              // or add properties one by one
               .withProperty("Number", n)
               .withProperty("IsOdd", n % 2 == 1)
               .withProperty("IsEven", n % 2 == 0);
@@ -341,9 +347,9 @@ public class JmsConnectorsTest {
                   .map(
                       jmsTextMessage ->
                           jmsTextMessage
-                              .withHeader(JmsType.create("type"))
-                              .withHeader(JmsCorrelationId.create("correlationId"))
-                              .withHeader(JmsReplyTo.queue("test-reply"))
+                              // Replace multiple headers at once
+                              .withHeadersFromJava(new HashSet<>(Arrays.asList(JmsType.create("type"), JmsCorrelationId.create("correlationId"), JmsReplyTo.queue("test-reply"))))
+                              // or add headers one by one
                               .withHeader(JmsTimeToLive.create(999, TimeUnit.SECONDS))
                               .withHeader(JmsPriority.create(2))
                               .withHeader(JmsDeliveryMode.create(DeliveryMode.NON_PERSISTENT)))

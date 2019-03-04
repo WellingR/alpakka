@@ -197,6 +197,9 @@ class JmsConnectorsSpec extends JmsSpec {
         val msgsIn = (1 to 10).toList.map { n =>
           akka.stream.alpakka.jms
             .JmsTextMessage(n.toString)
+            // Replace all properties at once
+            .withProperties(Map("Message" -> "Example", "AnotherProperty" -> "Example"))
+            // or add properties one by one
             .withProperty("Number", n)
             .withProperty("IsOdd", n % 2 == 1)
             .withProperty("IsEven", n % 2 == 0)
@@ -263,9 +266,9 @@ class JmsConnectorsSpec extends JmsSpec {
         //#create-messages-with-headers
         val msgsIn = (1 to 10).toList.map { n =>
           JmsTextMessage(n.toString)
-            .withHeader(JmsType("type"))
-            .withHeader(JmsCorrelationId("correlationId"))
-            .withHeader(JmsReplyTo.queue("test-reply"))
+            // Replace multiple headers at once
+            .withHeaders(Set(JmsType("type"), JmsCorrelationId("correlationId"), JmsReplyTo.queue("test-reply")))
+            // or add headers one by one
             .withHeader(JmsTimeToLive(FiniteDuration(999, TimeUnit.SECONDS)))
             .withHeader(JmsPriority(2))
             .withHeader(JmsDeliveryMode(DeliveryMode.NON_PERSISTENT))
