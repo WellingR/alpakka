@@ -48,7 +48,17 @@ object JmsPassThrough {
 /**
  * Marker trait for stream elements that do not contain pass-through data.
  */
-sealed trait JmsMessage extends JmsEnvelope[NotUsed]
+sealed trait JmsMessage extends JmsEnvelope[NotUsed] {
+  /**
+    * Add a Jms header e.g. JMSType
+    */
+  def withHeader(jmsHeader: JmsHeader): JmsMessage
+
+  /**
+    * Add a property
+    */
+  def withProperty(name: String, value: Any)
+}
 
 /**
  * Produces byte arrays to JMS, supports pass-through data.
